@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Actualización a la versión 3
 
       - name: Set up SSH
         env:
@@ -33,14 +33,18 @@ jobs:
                 sudo npm install -g pm2
             fi
 
-            # Moverse al directorio de la aplicación
-            cd /home/ec2-user/proyectos/Venta-Tickets  # Cambia esta ruta al directorio donde clonaste el proyecto en EC2
+            # Asegurarse de que el directorio de la aplicación existe
+            cd /home/ec2-user/proyectos/Venta-Tickets || exit 1
 
             # Instalar dependencias de Node.js
+            echo "Instalando dependencias..."
             npm install
 
-            # Instalar mongodb si está especificado como dependencia
-            npm install mongodb
+            # Verificar si express está instalado
+            if ! npm list express &>/dev/null; then
+              echo "Express no está instalado, instalando express..."
+              npm install express --save
+            fi
           EOF
 
       - name: Clean up
@@ -52,7 +56,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3  # Actualización a la versión 3
 
       - name: Set up SSH
         env:
@@ -68,8 +72,8 @@ jobs:
           EC2_USER: ${{ secrets.EC2_USER }}
         run: |
           ssh -i ssh_key -o StrictHostKeyChecking=no $EC2_USER@$EC2_HOST << 'EOF'
-            # Moverse al directorio de la aplicación
-            cd /home/ec2-user/proyectos/Venta-Tickets  # Cambia esta ruta al directorio donde clonaste el proyecto en EC2
+            # Asegurarse de que el directorio de la aplicación existe
+            cd /home/ec2-user/proyectos/Venta-Tickets || exit 1
 
             # Actualizar el repositorio con el último código
             git pull origin main
@@ -80,4 +84,3 @@ jobs:
 
       - name: Clean up
         run: rm ssh_key
-
