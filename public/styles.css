@@ -21,8 +21,15 @@ body {
 }
 
 h1 {
-  text-align: center;
-  color: #2c3e50;
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+h2 {
+  font-size: 1.5rem;
+  color: #666;
+  margin-bottom: 20px;
 }
 
 #asientosList {
