@@ -78,8 +78,11 @@ jobs:
             # Actualizar el repositorio con el último código
             git pull origin main
 
-            # Reiniciar la aplicación usando pm2 con el nuevo nombre
-            pm2 restart mi_app_node || pm2 start app.js --name mi_app_node
+            # Detener cualquier proceso que esté usando el puerto 3000 (si la aplicación ya está en ejecución)
+            fuser -k 3000/tcp || true
+
+            # Iniciar la aplicación en segundo plano en el puerto 3000
+            nohup node app.js > app.log 2>&1 &
           EOF
 
       - name: Clean up
